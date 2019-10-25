@@ -1,5 +1,21 @@
-#elevators {
+.System {
+    /*margin: auto 0px;*/
     position: relative;
+    width: auto;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: flex-start;
+    align-content: flex-start;
+}
+
+
+#elevators,
+.ElevatorSystem {
+    position: relative;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: flex-start;
+    align-content: flex-start;
     background-color: #36354c;
     height: 402px;
     width: 402px;
@@ -70,9 +86,10 @@
     left: 335px;
 }
 
+.request,
 #buttons {
     position: relative;
-    left: 402px;
+    left: 10px;
     height: 366px;
     width: 52px;
     padding: 18px 0px;
@@ -82,6 +99,10 @@
 
 .button-floor {
     height: 23px;
+}
+
+.request-btn {
+    width: 100%;
 }
 
 .button {

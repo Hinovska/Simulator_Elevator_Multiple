@@ -4,9 +4,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="./css/main.css" rel="stylesheet" type="text/css" />
     <script src="./javascript/jquery.min.js" type="text/javascript"></script>
+    <script src="./javascript/knockout.min.js" type="text/javascript"></script>
 </head>
 <body>
-    <div id='elevators'>
+    <!--<div id='elevators'>
         <div id='elevator1' class='elevator'>
             <span>A</span>
             <div class='car'>
@@ -98,7 +99,7 @@
                     <div><span>1</span></div>
                 </div>
             </div>
-        </div>   
+        </div>
         <div id='elevator5' class='elevator'>
             <span>E</span>
             <div class='car'>
@@ -146,6 +147,22 @@
             </div>
         </div>
         <div id='buttons'></div>
+    </div>-->
+    <div id="ElevatorSystem" class="System">
+        <div id="elevators" data-bind="foreach: ListElevator(), visible:ListElevator().length > 0" class="elevators">
+            <div data-bind="attr: {id: ('elevator' + Id)}," class="elevator">
+                <span data-bind="text:Name"></span>
+                <div class="car">
+                    <div data-bind="foreach: LstFloors(), visible:LstFloors().length > 0">
+                        <div> <span data-bind="text:Name"></span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id='buttons'></div>
+        <div id="request" data-bind="foreach: ListRequest()" class="request">
+            <input type="button" class="request-btn" data-bind="attr: {id: ('floor' + Id), value: Id, text :Id}, event: { click: $root.SendRequest }" />
+        </div>
     </div>
     <script src="./javascript/code.js" type="text/javascript"></script>
 </body>
