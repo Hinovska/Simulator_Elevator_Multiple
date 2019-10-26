@@ -1,4 +1,4 @@
-# Simulador Administracion de trafico de Ascensor
+# Simulador administracion de trafico en sistema de Ascensores
 Simulador de Elevador optimizado para solicitudes de pasajeros.
 
 Proyecto de Aula para Sistemas Digitales
