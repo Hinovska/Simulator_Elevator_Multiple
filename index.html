@@ -5,163 +5,47 @@
     <link href="./css/main.css" rel="stylesheet" type="text/css" />
     <script src="./javascript/jquery.min.js" type="text/javascript"></script>
     <script src="./javascript/knockout.min.js" type="text/javascript"></script>
+    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!--<div id='elevators'>
-        <div id='elevator1' class='elevator'>
-            <span>A</span>
-            <div class='car'>
-                <div>
-                    <div><span>16</span></div>
-                    <div><span>15</span></div>
-                    <div><span>14</span></div>
-                    <div><span>13</span></div>
-                    <div><span>12</span></div>
-                    <div><span>11</span></div>
-                    <div><span>10</span></div>
-                    <div><span>9</span></div>
-                    <div><span>8</span></div>
-                    <div><span>7</span></div>
-                    <div><span>6</span></div>
-                    <div><span>5</span></div>
-                    <div><span>4</span></div>
-                    <div><span>3</span></div>
-                    <div><span>2</span></div>
-                    <div><span>1</span></div>
-                </div>
-            </div>
+    <div id="ElevatorSystem" class="System" data-bind="css: { enabled: EnableSystem()}">
+        <div class="data">
+          <span>Sistemas Digitales</span>
+          <span>Ing Sistemas</span>
+          <span>Proyecto de Aula</span>
         </div>
-        <div id='elevator2' class='elevator'>
-            <span>B</span>
-            <div class='car'>
-                <div>
-                    <div><span>16</span></div>
-                    <div><span>15</span></div>
-                    <div><span>14</span></div>
-                    <div><span>13</span></div>
-                    <div><span>12</span></div>
-                    <div><span>11</span></div>
-                    <div><span>10</span></div>
-                    <div><span>9</span></div>
-                    <div><span>8</span></div>
-                    <div><span>7</span></div>
-                    <div><span>6</span></div>
-                    <div><span>5</span></div>
-                    <div><span>4</span></div>
-                    <div><span>3</span></div>
-                    <div><span>2</span></div>
-                    <div><span>1</span></div>
-                </div>
-            </div>
-        </div>
-        <div id='elevator3' class='elevator'>
-            <span>C</span>
-            <div class='car'>
-                <div>
-                    <div><span>16</span></div>
-                    <div><span>15</span></div>
-                    <div><span>14</span></div>
-                    <div><span>13</span></div>
-                    <div><span>12</span></div>
-                    <div><span>11</span></div>
-                    <div><span>10</span></div>
-                    <div><span>9</span></div>
-                    <div><span>8</span></div>
-                    <div><span>7</span></div>
-                    <div><span>6</span></div>
-                    <div><span>5</span></div>
-                    <div><span>4</span></div>
-                    <div><span>3</span></div>
-                    <div><span>2</span></div>
-                    <div><span>1</span></div>
-                </div>
-            </div>
-        </div>
-        <div id='elevator4' class='elevator'>
-            <span>D</span>
-            <div class='car'>
-                <div>
-                    <div><span>16</span></div>
-                    <div><span>15</span></div>
-                    <div><span>14</span></div>
-                    <div><span>13</span></div>
-                    <div><span>12</span></div>
-                    <div><span>11</span></div>
-                    <div><span>10</span></div>
-                    <div><span>9</span></div>
-                    <div><span>8</span></div>
-                    <div><span>7</span></div>
-                    <div><span>6</span></div>
-                    <div><span>5</span></div>
-                    <div><span>4</span></div>
-                    <div><span>3</span></div>
-                    <div><span>2</span></div>
-                    <div><span>1</span></div>
-                </div>
-            </div>
-        </div>
-        <div id='elevator5' class='elevator'>
-            <span>E</span>
-            <div class='car'>
-                <div>
-                    <div><span>16</span></div>
-                    <div><span>15</span></div>
-                    <div><span>14</span></div>
-                    <div><span>13</span></div>
-                    <div><span>12</span></div>
-                    <div><span>11</span></div>
-                    <div><span>10</span></div>
-                    <div><span>9</span></div>
-                    <div><span>8</span></div>
-                    <div><span>7</span></div>
-                    <div><span>6</span></div>
-                    <div><span>5</span></div>
-                    <div><span>4</span></div>
-                    <div><span>3</span></div>
-                    <div><span>2</span></div>
-                    <div><span>1</span></div>
-                </div>
-            </div>
-        </div>
-        <div id='elevator6' class='elevator'>
-            <span>F</span>
-            <div class='car'>
-                <div>
-                    <div><span>16</span></div>
-                    <div><span>15</span></div>
-                    <div><span>14</span></div>
-                    <div><span>13</span></div>
-                    <div><span>12</span></div>
-                    <div><span>11</span></div>
-                    <div><span>10</span></div>
-                    <div><span>9</span></div>
-                    <div><span>8</span></div>
-                    <div><span>7</span></div>
-                    <div><span>6</span></div>
-                    <div><span>5</span></div>
-                    <div><span>4</span></div>
-                    <div><span>3</span></div>
-                    <div><span>2</span></div>
-                    <div><span>1</span></div>
-                </div>
-            </div>
-        </div>
-        <div id='buttons'></div>
-    </div>-->
-    <div id="ElevatorSystem" class="System">
+        <div class="simulator">
         <div id="elevators" data-bind="foreach: ListElevator(), visible:ListElevator().length > 0" class="elevators">
             <div data-bind="attr: {id: ('elevator' + Id)}," class="elevator">
                 <span data-bind="text:Name"></span>
-                <div class="car">
+                <div class="car" data-bind="css: { bussy: Bussy(), moved: moving()}">
                     <div data-bind="foreach: LstFloors(), visible:LstFloors().length > 0">
                         <div> <span data-bind="text:Name"></span></div>
                     </div>
                 </div>
             </div>
         </div>
-        <div id='buttons'></div>
         <div id="request" data-bind="foreach: ListRequest()" class="request">
-            <input type="button" class="request-btn" data-bind="attr: {id: ('floor' + Id), value: Id, text :Id}, event: { click: $root.SendRequest }" />
+            <div class="item">
+              <input type="button" class="request-btn" data-bind="attr: {id: ('floor' + Id), value: Id, text :Id}, event: { click: $root.OpenOptions }" />
+              <div data-bind="visible: Enabled()" class="modal">
+                <span data-bind="text:('Piso # ' + Id)"></span>
+                <div data-bind="foreach: LstFloorsOption()" class="request-data">
+                  <input type="button" class="request-btn" data-bind="attr: {id: ('optfloor' + Id), value: Id, text :Id}, event: { click: $parent.PushRequest }" />
+                </div>
+                <span data-bind="text: ElevatorGoing" class="asigned"></span>
+                <input type="button" class="request-btn close" data-bind="attr: {id: ('closeOpt' + Id), value: 'X', text :'X'}, event: { click: $parent.OpenOptions }" />
+              </div>
+            </div>
+        </div>
+      </div>
+        <div class="data">
+          <div class="team">
+            <span>Integrantes:</span>
+            <span>Andrés Hernando Gómez Rojas</span>
+            <span>Yuri Tatiana Pineda Pinzón</span>
+            <span>Juan Norrison Salazar Sáenz</span>
+          </div>
         </div>
     </div>
     <script src="./javascript/code.js" type="text/javascript"></script>

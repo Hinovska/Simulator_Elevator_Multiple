@@ -1,66 +1,147 @@
+/*Modelo principal del sistema de acsensores*/
 function ElevatorSystemModel(numElevators, numFloors) {
     var self = this;
     self.NumElevators = ko.observable(numElevators);
     self.NumFloors = ko.observable(numFloors);
-    self.CostStop = ko.observable(1.5);
-    self.CostStart = ko.observable(1.5);
-    self.CostByFloor = ko.observable(2);
+    self.CostStop = ko.observable(1);
+    self.CostStart = ko.observable(1);
+    self.CostByFloor = ko.observable(0.5);
     self.ListRequest = ko.observableArray();
     self.ListElevator = ko.observableArray();
+    self.ListAlphabet = ko.observableArray();
+    //Metodo de inicializacion de parametrizacion
     self.Init = function fnInit() {
+        self.ListAlphabet(self.GetAlphabet("A", "Z"));
         if (self.NumElevators() && self.NumFloors() && self.NumElevators() > 0 && self.NumFloors() > 0) {
             var ListElevators = new Array();
             for (var i = 1; i <= self.NumElevators(); i++) {
-                ListElevators.push(new Elevator(i, i, self.NumFloors(), true, 1));
+                ListElevators.push(new Elevator(i, self.ListAlphabet()[(i - 1 + self.ListAlphabet().length) % self.ListAlphabet().length], self.NumFloors(), true, 1));
             }
             var LstRequest = new Array();
             for (var i = 1; i <= self.NumFloors(); i++) {
-                LstRequest.push(new Request(i, i, true));
+                LstRequest.push(new Request(i, i, false, self.NumFloors()));
             }
             self.ListElevator(ListElevators);
             self.ListRequest(LstRequest.reverse());
+            self.EnableSystem(true);
         }
     };
-    self.SendRequest = function fnSendRequest(Salary) {
-        //if (self.SalaryRangeSelected() != Salary) {
-        //    self.SalaryRangeList().filter(function (obj) { return obj.Selected() == true; }).map(function (item) { item.Selected(false); });
-        //    self.SalaryRangeList().filter(function (obj) { return obj == Salary; }).map(function (item) { item.Selected(true); });
-        //    self.SalaryRangeSelected(Salary);
-        //    self.SalaryRange(Salary.Name);
-        console.log(Salary.Id);
+    //Metodo de envio de Ascensor para atender solicitud de usuario en deterinado piso
+    self.SendRequest = function fnSendRequest(Elevator, Floor, FloorEnd) {
+      //console.log("Sending Elevator " + Elevator.Name + " to "+ Floor + " trans to "+ FloorEnd);
+      self.ListRequest().filter((x)=> { return x.Id == Floor; }).map((y) => {y.CarAsigned(Elevator.Name + " to floor " + FloorEnd);});
+      self.MoveCar(Elevator.Id, Floor, function (){
+        self.MoveCar(Elevator.Id, FloorEnd);
+        self.ListRequest().filter((x)=> { return x.Id == Floor; }).map((y) => {y.CarAsigned("");});
+       });
     };
-    self.MoveCar = function fnMoveCar(car, floor) {
-        const myCars = this.ListElevator();
+    //Metodo para calcular la energia necesaria para mover acsensor desde un piso a otro
+    self.CalulateCostMove = function fnCalulateCostMove(StartFloor, EndFloor){
+      if (typeof(StartFloor) != "undefined" && !isNaN(StartFloor) && Number(StartFloor) <= self.NumFloors() && Number(StartFloor) > 0
+      && typeof(EndFloor) != "undefined" && !isNaN(EndFloor) && Number(EndFloor) <= self.NumFloors() && Number(EndFloor) > 0){
+        var iCostTrans = 0;
+        var iRequest = Number(StartFloor);
+        var iDestine = Number(EndFloor);
+        var Direction = (Number(iDestine) > Number(iRequest)) ? "Up" : (Number(iDestine) < Number(iRequest)) ? "Down" : "Static";
+          switch (Direction) {
+            case "Up":
+                iCostTrans = self.CostStop() + self.CostStart() + ((iDestine - iRequest) * self.CostByFloor());
+              break;
+            case "Down":
+                iCostTrans = self.CostStop() + self.CostStart() + ((iRequest - iDestine) * self.CostByFloor());
+              break;
+            default:
+                iCostTrans = 0;
+              break;
+          }
+        }
+        return iCostTrans;
+    };
+    //Metodo para la apertura de las opciones de pisos de destino al usuario en cada uno de los pisos
+    self.OpenOptions = function fnOpenOptions(Request){
+      if(Request.Enabled()){
+        self.ListRequest().filter((opt) => { return opt.Enabled();}).map((tet)=>{tet.Enabled(false);});
+        Request.Enabled(false);
+      }
+      else {
+        self.ListRequest().filter((opt) => { return opt.Enabled();}).map((tet)=>{tet.Enabled(false);});
+        Request.Enabled(true);
+      }
+    };
+    //Metodo que evalua la mejor opcion de ascensor para atender la solicitud de un usuario especifico
+    //Busca el ascensor mas cercano para el usuario
+    self.SaveRequest = function fnSendRequest(Request, Destine) {
+        var CostTrans = self.CalulateCostMove(Request, Destine);
+        //console.log("Cost Transport User:" + CostTrans);
+        var ElevatorData = new Array();
+        self.ListElevator().filter((elev) => {return elev.moving() == false;}).map((car)=>{
+            var CurrentFloor = car.CurrentFloor().Id;
+            var iCostReceive = self.CalulateCostMove(CurrentFloor, Request);
+            ElevatorData.push({data: car.Id, cost: iCostReceive});
+         });
+         if (ElevatorData.length > 0){
+          //console.log(ElevatorData);
+          ElevatorData = ElevatorData.reduce((prev, curr) => prev.cost < curr.cost ? prev : curr);
+          //console.log(ElevatorData);
+          if(typeof(ElevatorData) != "undefined"){
+            self.SendRequest(self.ListElevator().filter((best)=>{return best.Id == ElevatorData.data;})[0], Request, Destine);
+          }
+        }
+    };
+    //Metodo para mover el ascensor graficamente desde un piso a otro
+    self.MoveCar = function fnMoveCar(car, floor, fnCallBack) {
         const deferred = $.Deferred();
-        var CarItem = self.ListElevator().filter(function (carItem) { return carItem.Id == car; })[0];
-        debugger;
-        if (CarItem && CarItem.moving()) {
-            return deferred.reject();
-        }
-        if ((floor < 1) || (floor > self.NumFloors())) {
-            return deferred.reject();
-        }
-        CarItem.moving(true);
-        console.log("Start Move Elevator " + car.toString());
-        $(`#elevator${car} .car`).animate({ bottom: `${(floor - 1) * 23}px` }, {
-            duration: 500 * Math.abs(CarItem.CurrentFloor().Id - floor),
-            easing: 'swing',
-            complete() {
-                CarItem.CurrentFloor(CarItem.LstFloors().filter(function (item) { return item.Id == floor; })[0]);
-                CarItem.moving(false);
-                console.log("Stop Move Elevator " + car.toString());
-                return deferred.resolve();
-            }
-        }).delay(75);
-        $(`#elevator${car} .car > div`).animate({ top: `${(-368 + (floor * 23))}px` }, {
-            duration: 500 * Math.abs(CarItem.CurrentFloor().Id - floor),
-            easing: 'swing'
-        }).delay(75);
+        self.ListElevator().filter(function (carItem) { return carItem.Id == car; }).map((CarItem)=>{
+          if (CarItem && CarItem.moving()) {
+              return deferred.reject();
+          }
+          if ((floor < 1) || (floor > self.NumFloors())) {
+              return deferred.reject();
+          }
+          CarItem.moving(true);
+          //console.log("Start Move Elevator " + CarItem.Name);
+          $(`#elevator${CarItem.Id} .car`).animate({ bottom: `${(floor - 1) * 23}px` }, {
+              duration: 500 * Math.abs(CarItem.CurrentFloor().Id - floor),
+              easing: 'swing',
+              complete() {
+                  CarItem.CurrentFloor(CarItem.LstFloors().filter(function (item) { return item.Id == floor; })[0]);
+                  CarItem.moving(false);
+                  //console.log("Stop Move Elevator " + CarItem.Name);
+                  if (typeof(fnCallBack) === "function"){
+                    setTimeout(fnCallBack, 1000);
+                    CarItem.Bussy(true);
+                  }
+                  else {
+                    CarItem.Bussy(false);
+                  }
+                  return deferred.resolve();
+              }
+          }).delay(75);
+          $(`#elevator${CarItem.Id} .car > div`).animate({ top: `${(-368 + (floor * 23))}px` }, {
+              duration: 500 * Math.abs(CarItem.CurrentFloor().Id - floor),
+              easing: 'swing'
+          }).delay(75);
+        });
         return deferred;
     };
-    self.EnableSystem = ko.observable(true);
+    //Metodo que construye el array para nombrar los ascesores con letras especificas
+    self.GetAlphabet = function genCharArray(charA, charZ) {
+        var a = [], i = charA.charCodeAt(0), j = charZ.charCodeAt(0);
+        for (; i <= j; ++i) {
+            a.push(String.fromCharCode(i));
+        }
+        return a;
+    };
+    //Metodo para obtener numero aleatorio
+    self.GetRandomNumber =  function getRandomInt(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    };
+    self.EnableSystem = ko.observable(false);
 }
 
+//Clase base para la creacion de objetos tipo Elevador
 function Elevator(id, name, FloorNumber, bussy, currentFloor) {
     var SelfItem = this;
     SelfItem.Id = id;
@@ -74,9 +155,15 @@ function Elevator(id, name, FloorNumber, bussy, currentFloor) {
         ListFlors.push(new Floor(i, i, false));
     }
     SelfItem.LstFloors = ko.observableArray(ListFlors.reverse());
-    SelfItem.CurrentFloor(SelfItem.LstFloors()[0]);
+    console.log(SelfItem.LstFloors()[SelfItem.LstFloors().length - 1]);
+    SelfItem.CurrentFloor(SelfItem.LstFloors()[SelfItem.LstFloors().length - 1]);
+    SelfItem.LabelName = ko.pureComputed(function () {
+        var ListAdverts = SelfItem.Id;
+        return ListAdverts;
+    }, SelfItem);
 }
 
+//Clase base para la creacion de objetos tipo Piso
 function Floor(id, name, checked) {
     var selfFloor = this;
     selfFloor.Id = id;
@@ -84,148 +171,53 @@ function Floor(id, name, checked) {
     selfFloor.Bussy = ko.observable(checked);
 }
 
-function Request(id, name, enabled) {
+//Clase base para la creacion de objetos tipo solicitud de servicio de ascensor
+function Request(id, name, enabled, numFloors) {
     var selfRequest = this;
     selfRequest.Id = id;
     selfRequest.Name = name;
     selfRequest.Enabled = ko.observable(enabled);
+    var ListOptions = new Array();
+    for (var i = 1; i <= numFloors; i++) {
+        ListOptions.push(new Floor(i, i, true));
+    }
+    selfRequest.LstFloorsOption = ko.observableArray(ListOptions.filter((a) => {return a.Id != id;}));
     selfRequest.CarAsigned = ko.observable();
+    selfRequest.PushRequest = function fnDefineDireccion (Floor){
+      if (typeof(Floor) != "undefined" && Floor.hasOwnProperty("Id")){
+        //console.log("Request:" + selfRequest.Id + "|Destine:" + Floor.Id);
+        window.ElevatorSystemManager.SaveRequest(selfRequest.Id, Floor.Id);
+      }
+    };
+    selfRequest.ElevatorGoing = ko.pureComputed(function () {
+        var ElevatorName = (typeof(selfRequest.CarAsigned()) == "string" && selfRequest.CarAsigned().length > 0) ? "Please take elevator " + selfRequest.CarAsigned() : "";
+        return ElevatorName;
+    }, selfRequest);
 }
 
+//Metodo para la inicializacion de Modilo de sistema de ascensores
 window.InitializeViewModel = function fnInitializeViewModel() {
     ko.options.useOnlyNativeEvents = true;
     if (typeof (window.ElevatorSystemManager) == "undefined") { window.ElevatorSystemManager = new ElevatorSystemModel(6, 16); };
     window.ElevatorSystemManager.Init();
     if (!!ko.dataFor(document.getElementById("ElevatorSystem")) == false) { ko.applyBindings(window.ElevatorSystemManager); }
 }
-
 window.InitializeViewModel();
 
-class ElevatorModelView {
-    constructor() {
-        this.floors = 16;
-        this.cars = [{ floor: 1, moving: false },
-        { floor: 1, moving: false },
-        { floor: 1, moving: false },
-        { floor: 1, moving: false },
-        { floor: 1, moving: false },
-        { floor: 1, moving: false }];
-
-        const me = this;
-
-        const buttons = ((() => {
-            const result = [];
-            for (let floor = 16; floor >= 1; floor--) {
-                result.push(`\
-                <div id = 'button-floor-${floor}' class='button-floor'>
-                      <button class='button up' data-floor='${floor}'><div class='up'></div></button>
-                      <button class='button down' data-floor='${floor}'><div class='down'></div></button>
-                </div>\
-                `);
-            }
-            return result;
-        })()).join('');
-
-        $('#buttons').empty().append($(buttons)).off('click').on('click', 'button', function () {
-            console.log("Call Click Bottom");
-            if ($(this).hasClass('on')) { return; }
-            $(this).toggleClass('on');
-            return $(me).trigger('pressed', [{ floor: parseInt($(this)[0].dataset.floor), dir: $(this).children().hasClass('up') ? 'up' : 'down' }]);
-        });
-    }
-
-    clearButton(floor, dir) {
-        console.log("Call clearButton");
-        return $(`#button-floor-${floor} > button > div.${dir}`).parent().removeClass('on');
-    }
-
-    firstIdleCar() {
-        console.log("Call firstIdleCar");
-        return ((() => {
-            const result = [];
-            for (let i = 0; i < this.cars.length; i++) {
-                const car = this.cars[i];
-                if (!car.moving) {
-                    result.push(i + 1);
-                }
-            }
-            return result;
-        })())[0];
-    }
-
-    closestIdleCar(floor) {
-        console.log("Call closestIdleCar");
-        let a;
-        console.log(`Finding closest car to ${floor} from `, this.cars);
-        const nonmoving = ((() => {
-            const result = [];
-            for (let i = 0; i < this.cars.length; i++) {
-                const car = this.cars[i];
-                if (!car.moving) {
-                    result.push([i + 1, Math.abs(floor - car.floor)]);
-                }
-            }
-            return result;
-        })());
-
-        const closest = nonmoving.reduce(function (a, b) { if (a[1] <= b[1]) { return a; } else { return b; } });
-        const lowest = ((() => {
-            console.log("Call lowest");
-            const result1 = [];
-            for (a of Array.from(nonmoving)) {
-                if (a[1] === closest[1]) {
-                    result1.push(a[0]);
-                }
-            }
-            return result1;
-        })());
-
-        console.log(`Closest car to ${floor} is ${closest} from ${nonmoving}`);
-        return lowest[Math.floor(Math.random() * lowest.length)];
-    }
-
-    moveCar(car, floor) {
-        console.log("Call moveCar");
-        const myCars = this.cars;
-        const deferred = $.Deferred();
-        if (this.cars[car - 1].moving) {
-            return deferred.reject();
-        }
-        if ((floor < 1) || (floor > this.floors)) {
-            return deferred.reject();
-        }
-        this.cars[car - 1].moving = true;
-        console.log("Start Move Elevator " + car.toString());
-        $(`#elevator${car} .car`)
-            .animate({ bottom: `${(floor - 1) * 23}px` }, {
-                duration: 500 * Math.abs(myCars[car - 1].floor - floor),
-                easing: 'swing',
-                complete() {
-                    myCars[car - 1].floor = floor;
-                    myCars[car - 1].moving = false;
-                    console.log("Stop Move Elevator " + car.toString());
-                    return deferred.resolve();
-                }
-            }).delay(75);
-        $(`#elevator${car} .car > div`)
-            .animate({ top: `${(-368 + (floor * 23))}px` }, {
-                duration: 500 * Math.abs(myCars[car - 1].floor - floor),
-                easing: 'swing'
-            }).delay(75);
-        return deferred;
-    };
-}
-
-const modelView = new ElevatorModelView();
-
-$(modelView).on('pressed', function (e, { floor, dir }) {
-    console.log(`Pressed ${floor}-${dir}`);
-    return modelView.moveCar(modelView.closestIdleCar(floor), floor).then(() => modelView.clearButton(floor, dir));
-});
-
-modelView.moveCar(1, 16);
-modelView.moveCar(2, 4);
-modelView.moveCar(3, 8);
-modelView.moveCar(4, 9);
-modelView.moveCar(5, 12);
-modelView.moveCar(6, 1);
+//window.ElevatorSystemManager.MoveCar(1,7);
+window.ElevatorSystemManager.MoveCar(1, window.ElevatorSystemManager.GetRandomNumber(1,16));
+//modelView.moveCar(1, 16);
+//window.ElevatorSystemManager.MoveCar(2,4);
+window.ElevatorSystemManager.MoveCar(2, window.ElevatorSystemManager.GetRandomNumber(1,16));
+//modelView.moveCar(2, 4);
+//window.ElevatorSystemManager.MoveCar(3,8);
+window.ElevatorSystemManager.MoveCar(3, window.ElevatorSystemManager.GetRandomNumber(1,16));
+//modelView.moveCar(3, 8);
+//window.ElevatorSystemManager.MoveCar(4,9);
+window.ElevatorSystemManager.MoveCar(4, window.ElevatorSystemManager.GetRandomNumber(1,16));
+//modelView.moveCar(4, 9);
+//window.ElevatorSystemManager.MoveCar(5,12);
+window.ElevatorSystemManager.MoveCar(5, window.ElevatorSystemManager.GetRandomNumber(1,16));
+//modelView.moveCar(5, 12);
+//window.ElevatorSystemManager.MoveCar(6,1);
+window.ElevatorSystemManager.MoveCar(6, window.ElevatorSystemManager.GetRandomNumber(1,16));
