@@ -1,13 +1,21 @@
 /*Modelo principal del sistema de acsensores*/
 function ElevatorSystemModel(numElevators, numFloors) {
     var self = this;
+    //Numero de Ascensores
     self.NumElevators = ko.observable(numElevators);
+    //Munero de Pisos
     self.NumFloors = ko.observable(numFloors);
+    //Costo de Enegia al Detener el Ascensor
     self.CostStop = ko.observable(1);
+    //Costo de Enegia al Arrancar el Ascensor
     self.CostStart = ko.observable(1);
+    //Costo de Enegia de desplazamiento pos piso del ascensor
     self.CostByFloor = ko.observable(0.5);
+    //Listado de Botones de Solicitud en cada piso
     self.ListRequest = ko.observableArray();
+    //Listado de elevadores del sistema
     self.ListElevator = ko.observableArray();
+    //Listdo de letras del abcedario utilizado para nombrar los ascensores
     self.ListAlphabet = ko.observableArray();
     //Metodo de inicializacion de parametrizacion
     self.Init = function fnInit() {
@@ -70,8 +78,8 @@ function ElevatorSystemModel(numElevators, numFloors) {
     };
     //Metodo que evalua la mejor opcion de ascensor para atender la solicitud de un usuario especifico
     //Busca el ascensor mas cercano para el usuario
-    self.SaveRequest = function fnSendRequest(Request, Destine) {
-        var CostTrans = self.CalulateCostMove(Request, Destine);
+    self.SaveRequest = function fnSendRequest(Request, Destination) {
+        var CostTrans = self.CalulateCostMove(Request, Destination);
         //console.log("Cost Transport User:" + CostTrans);
         var ElevatorData = new Array();
         self.ListElevator().filter((elev) => {return elev.moving() == false;}).map((car)=>{
@@ -84,7 +92,7 @@ function ElevatorSystemModel(numElevators, numFloors) {
           ElevatorData = ElevatorData.reduce((prev, curr) => prev.cost < curr.cost ? prev : curr);
           //console.log(ElevatorData);
           if(typeof(ElevatorData) != "undefined"){
-            self.SendRequest(self.ListElevator().filter((best)=>{return best.Id == ElevatorData.data;})[0], Request, Destine);
+            self.SendRequest(self.ListElevator().filter((best)=>{return best.Id == ElevatorData.data;})[0], Request, Destination);
           }
         }
     };
