@@ -1,7 +1,7 @@
-body{
-  background-color: #f1c232;
-  color: #333333;
-  font-family: 'Roboto', sans-serif;
+body {
+    background-color: #f1c232;
+    color: #333333;
+    font-family: 'Roboto', sans-serif;
 }
 
 .System {
@@ -15,61 +15,61 @@ body{
     align-content: flex-start;
 }
 
-.System .data{
-  width: 100%;
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: flex-start;
-  align-content: flex-start;
-  padding: 10px 6px;
-}
+    .System .data {
+        width: 100%;
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: flex-start;
+        align-content: flex-start;
+        padding: 10px 6px;
+    }
 
-.System .simulator{
-  width: 100%;
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: center;
-  align-content: center;
-  padding: 10px 6px;
-}
+    .System .simulator {
+        width: 100%;
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: center;
+        align-content: center;
+        padding: 20px 6px;
+    }
 
-.System .data > span{
-    width: 100%;
-    text-align: center;
-}
+    .System .data > span {
+        width: 100%;
+        text-align: center;
+    }
 
-.System .data > span:first-child{
-    font-size: 28px;
-    font-weight: bold;
-}
+        .System .data > span:first-child {
+            font-size: 28px;
+            font-weight: bold;
+        }
 
-.System .data > .team{
-    width: 100%;
-    display: flex;
-    flex-flow: row wrap;
-    justify-content: flex-start;
-    align-content: flex-start;
-    border: droted 1px #14133d;
-}
+    .System .data > .team {
+        width: 100%;
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: flex-start;
+        align-content: flex-start;
+        border: droted 1px #14133d;
+    }
 
-.System .data > .team > span{
-    width: 100%;
-}
+        .System .data > .team > span {
+            width: 100%;
+        }
 
-.System .data > .team >  span:first-child{
-    font-size: 20px;
-    font-weight: bold;
-}
+            .System .data > .team > span:first-child {
+                font-size: 20px;
+                font-weight: bold;
+            }
 
-.System .data > .team >  span:not(:first-child){
-    font-size: 16px;
-    font-weight: normal;
-    margin-left: 5px;
-}
+            .System .data > .team > span:not(:first-child) {
+                font-size: 16px;
+                font-weight: normal;
+                margin-left: 5px;
+            }
 
-.System.enabled {
-    display: flex;
-}
+    .System.enabled {
+        display: flex;
+    }
 
 #elevators,
 .ElevatorSystem {
@@ -98,6 +98,34 @@ body{
     color: #9e9937
 }
 
+    .elevator.emergency {
+        background-color: red !important;
+    }
+
+    .elevator .emegencyState {
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: center;
+        align-content: center;
+        position: absolute;
+        top: -30px;
+        left: 0px;
+        right: 0px;
+    }
+
+        .elevator .emegencyState input.emergency {
+            width: 20px;
+            height: 20px;
+            color: red;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+            .elevator .emegencyState input.emergency.active {
+                color: red;
+                border: solid 1px red;
+            }
+
 .car {
     position: absolute;
     bottom: 0px;
@@ -109,93 +137,94 @@ body{
     overflow: hidden;
 }
 
-.car.bussy{
-  -webkit-box-shadow: inset 0px 0px 1px 1px #54d81eed !important;
-  -moz-box-shadow: inset 0px 0px 1px 1px #54d81eed !important;
-  box-shadow: inset 0px 0px 1px 1px #54d81eed !important;
-}
-
-.car.moved{
-  -webkit-box-shadow: inset 0px 0px 1px 1px rgba(222,222,62,1);
-  -moz-box-shadow: inset 0px 0px 1px 1px rgba(222,222,62,1);
-  box-shadow: inset 0px 0px 1px 1px rgba(222,222,62,1);
-}
-
-.modal{
-  position: fixed;
-  z-index: 1200;
-  right: 0px;
-  left: 0px;
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: center;
-  align-content: center;
-  top: 50% !important;
-  transform: translate(0,-50%) !important;
-  width: 250px;
-  margin: auto 20px auto auto;
-  background-color: #efe5ed;
-  padding: 5px;
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
-  border-radius: 3px;
-  border: solid 1px #c1c1c1;
-}
-
-.modal > span{
- margin: 4px auto;;
- color: #24233a;
- font-size: 18px;
- font-family: sans-serif;
-}
-
-.modal .request-data {
-  width: 100%;
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: center;
-  align-content: center;
-  padding: 3px;
-}
-
-.modal .request-data .request-btn{
-  margin: 1px;
-  width: 50px;
-  background-color:#121a3e;
-  border: solid 1px #c1c1c1;
-  cursor: pointer;
-  padding: 3px;
-}
-
-.modal .request-btn.close{
-  position: absolute;
-  width: 22px;
-  height: 22px;
-  font-size: 14px;
-  margin: 2px 2px 0px 0px;
-  background-color: #c73b3b;
-  border: solid 1px #c1c1c1;
-  right: 0px;
-  top:0px;
-  -webkit-border-radius: 50%;
-  -moz-border-radius: 50%;
-  border-radius: 50%;
-}
-
-    .car > div {
-        position: relative;
-        top: -343px;
+    .car.bussy {
+        -webkit-box-shadow: inset 0px 0px 1px 1px #54d81eed !important;
+        -moz-box-shadow: inset 0px 0px 1px 1px #54d81eed !important;
+        box-shadow: inset 0px 0px 1px 1px #54d81eed !important;
     }
 
-        .car > div > div {
-            position: relative;
-            height: 23px;
+    .car.moved {
+        -webkit-box-shadow: inset 0px 0px 1px 1px rgba(222,222,62,1);
+        -moz-box-shadow: inset 0px 0px 1px 1px rgba(222,222,62,1);
+        box-shadow: inset 0px 0px 1px 1px rgba(222,222,62,1);
+    }
+
+.modal {
+    position: fixed;
+    z-index: 1200;
+    right: 0px;
+    left: 0px;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    align-content: center;
+    top: 50% !important;
+    transform: translate(0,-50%) !important;
+    width: 250px;
+    margin: auto 20px auto auto;
+    background-color: #efe5ed;
+    padding: 5px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    border: solid 1px #c1c1c1;
+}
+
+    .modal > span {
+        margin: 4px auto;
+        ;
+        color: #24233a;
+        font-size: 18px;
+        font-family: sans-serif;
+    }
+
+    .modal .request-data {
+        width: 100%;
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: center;
+        align-content: center;
+        padding: 3px;
+    }
+
+        .modal .request-data .request-btn {
+            margin: 1px;
+            width: 50px;
+            background-color: #121a3e;
+            border: solid 1px #c1c1c1;
+            cursor: pointer;
+            padding: 3px;
         }
 
-            .car > div > div > span {
-                margin: 3px 0px;
-                display: inline-block;
-            }
+    .modal .request-btn.close {
+        position: absolute;
+        width: 22px;
+        height: 22px;
+        font-size: 14px;
+        margin: 2px 2px 0px 0px;
+        background-color: #c73b3b;
+        border: solid 1px #c1c1c1;
+        right: 0px;
+        top: 0px;
+        -webkit-border-radius: 50%;
+        -moz-border-radius: 50%;
+        border-radius: 50%;
+    }
+
+.car > div {
+    position: relative;
+    top: -343px;
+}
+
+    .car > div > div {
+        position: relative;
+        height: 23px;
+    }
+
+        .car > div > div > span {
+            margin: 3px 0px;
+            display: inline-block;
+        }
 
 #elevator1 {
     left: 0px;
@@ -252,24 +281,24 @@ body{
     align-content: flex-start;
 }
 
-.request > .item {
-  width: auto;
-  margin: 1px auto;
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: flex-start;
-  align-content: flex-start;
-}
+    .request > .item {
+        width: auto;
+        margin: 1px auto;
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: flex-start;
+        align-content: flex-start;
+    }
 
 .request-btn {
-  width: 60px;
-  cursor: pointer;
-  background-color:#008CBA;
-  color: white;
-  border: 2px solid #008CBA;
- -webkit-border-radius: 3px;
- -moz-border-radius: 3px;
- border-radius: 3px;
+    width: 60px;
+    cursor: pointer;
+    background-color: #008CBA;
+    color: white;
+    border: 2px solid #008CBA;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
 }
 
 .button-floor {
@@ -361,9 +390,9 @@ body{
             border-top: 7px solid #c73b65;
         }
 
-        .asigned{
-          width:100%;
-          text-align: center;
-          font-weight: bold;
-          min-height: 40px;
-        }
+.asigned {
+    width: 100%;
+    text-align: center;
+    font-weight: bold;
+    min-height: 40px;
+}

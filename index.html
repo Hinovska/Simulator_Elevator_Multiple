@@ -16,12 +16,15 @@
         </div>
         <div class="simulator">
         <div id="elevators" data-bind="foreach: ListElevator(), visible:ListElevator().length > 0" class="elevators">
-            <div data-bind="attr: {id: ('elevator' + Id)}," class="elevator">
+            <div data-bind="attr: {id: ('elevator' + Id)}, css: { emergency: Emergency()}" class="elevator">
                 <span data-bind="text:Name"></span>
                 <div class="car" data-bind="css: { bussy: Bussy(), moved: moving()}">
                     <div data-bind="foreach: LstFloors(), visible:LstFloors().length > 0">
                         <div> <span data-bind="text:Name"></span></div>
                     </div>
+                </div>
+                <div class="emegencyState">
+                    <input type="button" class="emergency" value="!" data-bind="event: { click: SetEmergency }, css: { active: Emergency()}" />
                 </div>
             </div>
         </div>
