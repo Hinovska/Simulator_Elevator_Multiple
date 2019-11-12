@@ -118,9 +118,11 @@ function ElevatorSystemModel(numElevators, numFloors) {
                     if (typeof (fnCallBack) === "function") {
                         setTimeout(fnCallBack, 1000);
                         CarItem.Bussy(true);
+                        //CarItem.StartTimer();
                     }
                     else {
                         CarItem.Bussy(false);
+                        //CarItem.StopTimer();
                     }
                     return deferred.resolve();
                 }
@@ -159,22 +161,47 @@ function Elevator(id, name, FloorNumber, bussy, currentFloor) {
     SelfItem.moving = ko.observable(false);
     SelfItem.CurrentFloor = ko.observable();
     SelfItem.Emergency = ko.observable(false);
+    SelfItem.countDown = ko.observable(0);
+    SelfItem.Timer = 0;
+    SelfItem.DataFormated = ko.observable().extend({ DataFormat: false });
     var ListFlors = new Array();
     for (var i = 1; i <= SelfItem.FloorsCount(); i++) {
         ListFlors.push(new Floor(i, i, false));
     }
     SelfItem.LstFloors = ko.observableArray(ListFlors.reverse());
-    console.log(SelfItem.LstFloors()[SelfItem.LstFloors().length - 1]);
     SelfItem.CurrentFloor(SelfItem.LstFloors()[SelfItem.LstFloors().length - 1]);
     SelfItem.LabelName = ko.pureComputed(function () {
         var ListAdverts = SelfItem.Id;
         return ListAdverts;
     }, SelfItem);
+    //SelfItem.LabelcountDown = ko.pureComputed(function () {
+    //    var timeSpam = (SelfItem.countDown() > 0) ? SelfItem.countDown() + " ms" : "--";
+    //    return timeSpam;
+    //}, SelfItem);
     SelfItem.SetEmergency = function fnSetEmergency(Elevator) {
         if (typeof (Elevator) != "undefined") {
             Elevator.Emergency((Elevator.Emergency()) ? false : true);
         }
     };
+    //SelfItem.StartTimer = function fnStartTimer() {
+    //    SelfItem.countDown(0);
+    //    SelfItem.RunTimer();
+    //};
+    //SelfItem.StopTimer = function fnStopTimer() {
+    //    SelfItem.countDown(0);
+    //    clearInterval(SelfItem.Timer);
+    //};
+    //SelfItem.RunTimer = function fnRunTimer() {
+    //    SelfItem.Timer = setInterval(function () {
+    //        SelfItem.countDown(SelfItem.countDown() + 1);
+    //        if (SelfItem.Bussy() != true) {
+    //            SelfItem.StopTimer();
+    //        }
+    //        else {
+    //            SelfItem.RunTimer();
+    //        }
+    //    }, 100);
+    //}
 }
 
 //Clase base para la creacion de objetos tipo Piso
@@ -208,6 +235,53 @@ function Request(id, name, enabled, numFloors) {
         return ElevatorName;
     }, selfRequest);
 }
+
+
+ko.bindingHandlers.timer = {
+    update: function (element, valueAccessor) {
+        var sec = $(element).text();
+        var timer = setInterval(function () {
+            $(element).text(--sec);
+            if (sec == 0) {
+                clearInterval(timer);
+            }
+        }, 1000);
+    }
+};
+
+ko.extenders.DataFormat = function (target, simbol) {
+    //Creacion de Computed que intecepta al observable extendido [target]
+    var result = ko.pureComputed({
+        read: function () {
+            return (typeof (target()) != "undefined") ? target() : "";
+        },
+        write: function (newValue) {
+            if (typeof (newValue) != "undefined") {
+                var current = target();
+                var valueToWrite = newValue;
+                if ((valueToWrite.indexOf(".") > -1) == true) {
+                    valueToWrite = valueToWrite.replace(/\./g, '');
+                }
+                //Validacion si en realidad cambio su valor
+                if (valueToWrite !== current) {
+                    target(valueToWrite);
+                }
+                else {
+                    //Si el valor ingresado es diferente, forzamos notificacion a campo actual.
+                    if (newValue !== current) {
+                        target.notifySubscribers(valueToWrite);
+                    }
+                }
+            }
+        }
+    }).extend({ notify: 'always' });
+
+    //Utilizcion del Compute creado para fromatear al target actual
+    result(target());
+
+    //Retorno del nuevo obserbable.
+    return result;
+};
 
 //Metodo para la inicializacion de Modilo de sistema de ascensores
 window.InitializeViewModel = function fnInitializeViewModel() {

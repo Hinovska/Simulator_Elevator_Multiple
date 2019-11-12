@@ -15,23 +15,24 @@
           <span>Proyecto de Aula</span>
         </div>
         <div class="simulator">
-        <div id="elevators" data-bind="foreach: ListElevator(), visible:ListElevator().length > 0" class="elevators">
-            <div data-bind="attr: {id: ('elevator' + Id)}, css: { emergency: Emergency()}" class="elevator">
-                <span data-bind="text:Name"></span>
-                <div class="car" data-bind="css: { bussy: Bussy(), moved: moving()}">
-                    <div data-bind="foreach: LstFloors(), visible:LstFloors().length > 0">
-                        <div> <span data-bind="text:Name"></span></div>
+            <div id="elevators" data-bind="foreach: ListElevator(), visible:ListElevator().length > 0" class="elevators">
+                <div data-bind="attr: {id: ('elevator' + Id)}, css: { emergency: Emergency()}" class="elevator">
+                    <span data-bind="text:Name"></span>
+                    <div class="car" data-bind="css: { bussy: Bussy(), moved: moving()}">
+                        <div data-bind="foreach: LstFloors(), visible:LstFloors().length > 0">
+                            <div> <span data-bind="text:Name"></span></div>
+                        </div>
+                    </div>
+                    <div class="emegencyState">
+                        <input type="button" class="emergency" value="!" data-bind="event: { click: SetEmergency }, css: { active: Emergency()}" />
                     </div>
                 </div>
-                <div class="emegencyState">
-                    <input type="button" class="emergency" value="!" data-bind="event: { click: SetEmergency }, css: { active: Emergency()}" />
-                </div>
+                <span class="timer" data-bind="timer: countDown">60</span>
             </div>
-        </div>
         <div id="request" data-bind="foreach: ListRequest()" class="request">
             <div class="item">
               <input type="button" class="request-btn" data-bind="attr: {id: ('floor' + Id), value: Id, text :Id}, event: { click: $root.OpenOptions }" />
-              <div data-bind="visible: Enabled()" class="modal">
+              <div class="panel">
                 <span data-bind="text:('Piso # ' + Id)"></span>
                 <div data-bind="foreach: LstFloorsOption()" class="request-data">
                   <input type="button" class="request-btn" data-bind="attr: {id: ('optfloor' + Id), value: Id, text :Id}, event: { click: $parent.PushRequest }" />
