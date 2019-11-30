@@ -37,7 +37,7 @@ function ElevatorSystemModel(numElevators, numFloors) {
     //Metodo de envio de Ascensor para atender solicitud de usuario en deterinado piso
     self.SendRequest = function fnSendRequest(Elevator, Floor, FloorEnd) {
         //console.log("Sending Elevator " + Elevator.Name + " to "+ Floor + " trans to "+ FloorEnd);
-        self.ListRequest().filter((x) => { return x.Id == Floor; }).map((y) => { y.CarAsigned(Elevator.Name + " to floor " + FloorEnd); });
+        self.ListRequest().filter((x) => { return x.Id == Floor; }).map((y) => { y.CarAsigned(Elevator.Name + " al piso " + FloorEnd); });
         self.MoveCar(Elevator.Id, Floor, function () {
             self.MoveCar(Elevator.Id, FloorEnd);
             self.ListRequest().filter((x) => { return x.Id == Floor; }).map((y) => { y.CarAsigned(""); });
@@ -107,6 +107,8 @@ function ElevatorSystemModel(numElevators, numFloors) {
                 return deferred.reject();
             }
             CarItem.moving(true);
+            CarItem.StartTime(Date.now());
+            CarItem.TimeService(undefined);
             //console.log("Start Move Elevator " + CarItem.Name);
             $(`#elevator${CarItem.Id} .car`).animate({ bottom: `${(floor - 1) * 23}px` }, {
                 duration: 500 * Math.abs(CarItem.CurrentFloor().Id - floor),
@@ -118,11 +120,13 @@ function ElevatorSystemModel(numElevators, numFloors) {
                     if (typeof (fnCallBack) === "function") {
                         setTimeout(fnCallBack, 1000);
                         CarItem.Bussy(true);
-                        //CarItem.StartTimer();
                     }
                     else {
                         CarItem.Bussy(false);
-                        //CarItem.StopTimer();
+                        if (CarItem.StartTime()){
+                            CarItem.TimeService((Date.now() - CarItem.StartTime())/1000);
+                            CarItem.StartTime(undefined);
+                        }
                     }
                     return deferred.resolve();
                 }
@@ -157,13 +161,15 @@ function Elevator(id, name, FloorNumber, bussy, currentFloor) {
     SelfItem.Id = id;
     SelfItem.Name = name;
     SelfItem.FloorsCount = ko.observable(FloorNumber);
-    SelfItem.Bussy = ko.observable(bussy);
+    //SelfItem.Bussy = ko.observable(bussy)
+    SelfItem.Bussy = ko.observable().extend({ TimerService: bussy });
     SelfItem.moving = ko.observable(false);
     SelfItem.CurrentFloor = ko.observable();
     SelfItem.Emergency = ko.observable(false);
     SelfItem.countDown = ko.observable(0);
+    SelfItem.StartTime = ko.observable();
+    SelfItem.TimeService = ko.observable();
     SelfItem.Timer = 0;
-    SelfItem.DataFormated = ko.observable().extend({ DataFormat: false });
     var ListFlors = new Array();
     for (var i = 1; i <= SelfItem.FloorsCount(); i++) {
         ListFlors.push(new Floor(i, i, false));
@@ -231,7 +237,7 @@ function Request(id, name, enabled, numFloors) {
         }
     };
     selfRequest.ElevatorGoing = ko.pureComputed(function () {
-        var ElevatorName = (typeof (selfRequest.CarAsigned()) == "string" && selfRequest.CarAsigned().length > 0) ? "Please take elevator " + selfRequest.CarAsigned() : "";
+        var ElevatorName = (typeof (selfRequest.CarAsigned()) == "string" && selfRequest.CarAsigned().length > 0) ? "Toma el elevador " + selfRequest.CarAsigned() : "";
         return ElevatorName;
     }, selfRequest);
 }
@@ -249,26 +255,28 @@ ko.bindingHandlers.timer = {
     }
 };
 
-ko.extenders.DataFormat = function (target, simbol) {
+ko.extenders.TimerService = function (target) {
     //Creacion de Computed que intecepta al observable extendido [target]
     var result = ko.pureComputed({
         read: function () {
-            return (typeof (target()) != "undefined") ? target() : "";
+            console.log("Read Value: " + target());
+            return (typeof (target()) != "undefined") ? target() : false;
         },
         write: function (newValue) {
             if (typeof (newValue) != "undefined") {
                 var current = target();
                 var valueToWrite = newValue;
-                if ((valueToWrite.indexOf(".") > -1) == true) {
-                    valueToWrite = valueToWrite.replace(/\./g, '');
-                }
                 //Validacion si en realidad cambio su valor
                 if (valueToWrite !== current) {
                     target(valueToWrite);
+                    if (valueToWrite === true){
+                      console.log("Shot Timer Agent");
+                    }
                 }
                 else {
                     //Si el valor ingresado es diferente, forzamos notificacion a campo actual.
                     if (newValue !== current) {
+                        console.log("Value Changed 2");
                         target.notifySubscribers(valueToWrite);
                     }
                 }

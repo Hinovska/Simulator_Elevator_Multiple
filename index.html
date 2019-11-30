@@ -24,16 +24,18 @@
                         </div>
                     </div>
                     <div class="emegencyState">
+                        <div class="timeData">
+                          <span class="timer" data-bind="attr: {id: ('timer' + Id)}, visible: ((TimeService()) ? true: false ), text : TimeService() + ' ms'"></span>
+                        </div>
                         <input type="button" class="emergency" value="!" data-bind="event: { click: SetEmergency }, css: { active: Emergency()}" />
                     </div>
                 </div>
-                <span class="timer" data-bind="timer: countDown">60</span>
             </div>
         <div id="request" data-bind="foreach: ListRequest()" class="request">
             <div class="item">
               <input type="button" class="request-btn" data-bind="attr: {id: ('floor' + Id), value: Id, text :Id}, event: { click: $root.OpenOptions }" />
               <div class="panel">
-                <span data-bind="text:('Piso # ' + Id)"></span>
+                <span class="lblfloor" data-bind="text:('Piso # ' + Id+ ':')"></span>
                 <div data-bind="foreach: LstFloorsOption()" class="request-data">
                   <input type="button" class="request-btn" data-bind="attr: {id: ('optfloor' + Id), value: Id, text :Id}, event: { click: $parent.PushRequest }" />
                 </div>
@@ -46,9 +48,9 @@
         <div class="data">
           <div class="team">
             <span>Integrantes:</span>
-            <span>Andrés Hernando Gómez Rojas</span>
-            <span>Yuri Tatiana Pineda Pinzón</span>
-            <span>Juan Norrison Salazar Sáenz</span>
+            <span>Andr&#233;s Hernando G&#243;mez Rojas</span>
+            <span>Yuri Tatiana Pineda Pinz&#243;n</span>
+            <span>Juan Norrison Salazar S&#225;enz</span>
           </div>
         </div>
     </div>
